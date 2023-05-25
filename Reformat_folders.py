@@ -70,10 +70,7 @@ def do_work():
 
     # back to the previous directory
     if not (currPath == mainPath):
-        while currPath[-1] != '\\':
-            currPath = currPath[:-1]
-        currPath = currPath[:-1]
-        os.chdir(currPath)
+        os.chdir("..")
 
 
 def execute():
