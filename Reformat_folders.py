@@ -3,7 +3,7 @@ import shutil
 import time
 
 #           0           1          2        3       4        5           6             7        8
-folders = ['Videos', 'Photos', 'Office', 'Code', 'pdf', 'compressed', 'windows apps', 'music', 'others', '.idea']
+folders = ['videos', 'photos', 'office', 'code', 'pdf', 'compressed', 'windows apps', 'music', 'others', '.idea']
 paths = []
 
 execution = [set(), set(), set(), set(), set(), set(), set(), set(), set(), set()]
@@ -33,8 +33,9 @@ all_extensions = [set(video_extensions), set(photo_extensions), set(office_exten
 
 def create_folders():
     curr = os.getcwd()
+    all_folders = [x.lower() for x in os.listdir(curr)]
     for folder in folders:
-        if not (folder in os.listdir(curr)):
+        if not (folder.lower() in all_folders):
             os.mkdir(folder)
         paths.append(curr + "\\" + folder)
 
@@ -45,9 +46,10 @@ mainPath = os.getcwd()
 def do_work():
     currDir = os.getcwd().split('\\')[-1]
     currPath = os.getcwd()
+
     for file in os.listdir(currPath):
         # check if the current folder is one of the created folders not to scan
-        if currDir in folders:
+        if file.lower() in folders and currPath == mainPath:
             continue
         #     check if the file is directory then scan it
         if os.path.isdir(file):
@@ -74,6 +76,7 @@ def do_work():
 
 
 def execute():
+    #
     for i in range(len(folders) - 1):
         cnt = 0
         folder_elements = set(os.listdir(paths[i]))
@@ -84,15 +87,40 @@ def execute():
             number = 1
             if elementName in folder_elements:
                 temp = elementName.split('.')
-                elementName = temp[0] + '_' + str(number) + '.' + temp[1]
-                while elementName in folder_elements:
-                    temp = elementName.split('.')
-                    elementName = temp[0][:-1] + str(number) + '.' + temp[1]
-                    number += 1
+                if len(temp) < 2:
+                    shutil.move(element, paths[8] + '\\' + elementName)
+                    continue
+                else:
+                    elementName = temp[0] + '_' + str(number) + '.' + temp[1]
+                    while elementName in folder_elements:
+                        temp = elementName.split('.')
+                        elementName = temp[0][:-1] + str(number) + '.' + temp[1]
+                        number += 1
             folder_elements.add(elementName)
             shutil.move(element, paths[i] + '\\' + elementName)
             cnt += 1
         print(folders[i], cnt)
+
+
+def delete_dir():
+    currPath = os.getcwd()
+    currDir = os.getcwd().split('\\')[-1]
+    for directory in os.listdir(currPath):
+        if (directory.lower() in folders) and mainPath == currPath:
+            continue
+        if os.path.isdir(directory):
+            tempPath = currPath + "\\" + directory
+            os.chdir(tempPath)
+            delete_dir()
+    if not (currPath == mainPath):
+        os.chdir("..")
+        if (currDir.lower() in folders) and mainPath == currPath:
+            pass
+        else:
+            try:
+                os.rmdir(currPath)
+            except PermissionError:
+                pass
 
 
 def main():
@@ -100,10 +128,8 @@ def main():
     create_folders()
     do_work()
     execute()
-    end_time = time.time()
-    execution_time = end_time - start_time
-    GREEN = '\033[92m'
-    print(f"{GREEN}Total execution time: {execution_time:.2f} seconds")
+    delete_dir()
+    print(f"\033[92mTotal execution time: {time.time() - start_time:.2f} seconds")
 
 
 main()
