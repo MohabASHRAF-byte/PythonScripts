@@ -1,4 +1,3 @@
-Certainly! Here's a basic README template for your code:
 
 ---
 
