@@ -15,9 +15,9 @@ driver = webdriver.Chrome()
 
 def get_data(sync: str, syncWith: str):
     global problems, st1
-    req1 = requests.get(f"https://codeforces.com/api/user.status?handle={sync}&from=1&count=5000").json()
+    req1 = requests.get(f"https://codeforces.com/api/user.status?handle={sync}&from=1&count=500000").json()
     # sleep(2)
-    req2 = requests.get(f"https://codeforces.com/api/user.status?handle={syncWith}&from=1&count=5000").json()
+    req2 = requests.get(f"https://codeforces.com/api/user.status?handle={syncWith}&from=1&count=500000").json()
     for idx, submission in enumerate(req1['result']):
         contestId = submission['contestId']
         problemIdx = submission['problem']['index']
